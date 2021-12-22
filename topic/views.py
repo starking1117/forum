@@ -2,6 +2,7 @@
 from django.views.generic import *
 from django.urls import reverse
 from .models import *
+from datetime import datetime
 
 # 討論主題列表
 class TopicList(ListView):
@@ -25,3 +26,27 @@ class TopicNew(CreateView):
 # 檢視討論主題
 class TopicView(DetailView): #一筆紀錄
     model = Topic
+
+    def get_context_data(self, **kwargs): #額外的資料從父親拿
+        # 取得回覆資料傳給頁面範本處理
+        ctx = super().get_context_data(**kwargs)
+        ctx['reply_list'] = Reply.objects.filter(topic=self.object) #object資料庫的紀錄 filter將Reply的資料篩選撈出來
+        return ctx
+
+# 回覆討論主題
+class TopicReply(CreateView):
+    model = Reply
+    fields = ['content']
+    template_name = 'topic/topic_form.html'
+
+    def form_valid(self, form): #缺的欄位在這時候填
+        topic = Topic.objects.get(id=self.kwargs['tid'])
+        form.instance.topic = topic #年少輕狂
+        #form.instance.topic_id = self.kwargs['tid']
+        form.instance.author = self.request.user
+        topic.replied = datetime.now()  # 更新討論主題回覆時間
+        topic.save() #自己填資料要自己存檔 (datetime)
+        return super().form_valid(form) #叫TopicReply/CreateView驗證
+
+    def get_success_url(self):
+        return reverse('topic_view', args=[self.kwargs['tid']]) #id會變動利用args告訴他

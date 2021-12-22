@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+#只要models有修改就要make...
 
 # Create your models here.
 # 討論主題
@@ -13,3 +14,17 @@ class Topic(models.Model):
     def __str__(self):
         return "{}: {}".format(self.author, self.subject)
 #superuser ann password:123456789
+
+# 討論主題內的回覆
+class Reply(models.Model):
+    topic = models.ForeignKey(Topic, models.CASCADE)
+    content = models.TextField('回覆內容')
+    author = models.ForeignKey(User, models.CASCADE)
+    created = models.DateTimeField('回覆時間', auto_now_add=True)
+
+    def __str__(self):
+        return "{} | {}: {}".format(
+            self.topic, 
+            self.author, 
+            self.content
+        )
