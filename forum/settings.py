@@ -126,3 +126,5 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/' # 登入成功後導向首頁
+
+LOGIN_URL = '/user/login/'

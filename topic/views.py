@@ -3,6 +3,7 @@ from django.views.generic import *
 from django.urls import reverse
 from .models import *
 from datetime import datetime
+from django.contrib.auth.mixins import PermissionRequiredMixin,LoginRequiredMixin
 
 # 討論主題列表
 class TopicList(ListView):
@@ -11,7 +12,7 @@ class TopicList(ListView):
     paginate_by = 20        # 每頁主題數 #分頁
 
 # 新增討論主題
-class TopicNew(CreateView):
+class TopicNew(LoginRequiredMixin,CreateView):
     model = Topic
     fields = ['subject', 'content'] #一定要有
 
@@ -34,7 +35,7 @@ class TopicView(DetailView): #一筆紀錄
         return ctx
 
 # 回覆討論主題
-class TopicReply(CreateView):
+class TopicReply(LoginRequiredMixin,CreateView):
     model = Reply
     fields = ['content']
     template_name = 'topic/topic_form.html'
@@ -50,3 +51,13 @@ class TopicReply(CreateView):
 
     def get_success_url(self):
         return reverse('topic_view', args=[self.kwargs['tid']]) #id會變動利用args告訴他
+
+# 刪除討論主題
+class TopicDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = 'topic.delete_topic' #view,add,change,delete
+    model = Topic
+    template_name = 'confirm_delete.html'
+    pk_url_kwarg = 'tid'
+
+    def get_success_url(self):
+        return reverse('topic_list')
