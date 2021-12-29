@@ -25,14 +25,20 @@ class TopicNew(LoginRequiredMixin,CreateView):
         return super().form_valid(form)
 
 # 檢視討論主題
-class TopicView(DetailView): #一筆紀錄
+class TopicView(DetailView):
     model = Topic
 
-    def get_context_data(self, **kwargs): #額外的資料從父親拿
+    def get_context_data(self, **kwargs):
         # 取得回覆資料傳給頁面範本處理
         ctx = super().get_context_data(**kwargs)
-        ctx['reply_list'] = Reply.objects.filter(topic=self.object) #object資料庫的紀錄 filter將Reply的資料篩選撈出來
+        ctx['reply_list'] = Reply.objects.filter(topic=self.object)
         return ctx
+
+    def get_object(self):
+        topic = super().get_object()    # 取得欲查看的討論主題
+        topic.hits += 1     # 等同 topic.hits = topic.hits + 1
+        topic.save()
+        return topic
 
 # 回覆討論主題
 class TopicReply(LoginRequiredMixin,CreateView):
