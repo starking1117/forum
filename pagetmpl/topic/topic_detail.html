@@ -10,22 +10,28 @@
     </div>
   </div>
   <div class="card-body">
+    {% if perms.topic.delete_topic %}
+    <a href="{% url 'topic_delete' topic.id %}" class="btn btn-sm btn-danger float-right">刪除主題</a>
+    {% endif %}
     {{ topic.content|linebreaks }}
-  </div> <!-- 有登錄才顯示回覆按鈕 -->
+  </div>
   {% if user.is_authenticated %}
   <div class="card-footer">
     <a href="{% url 'topic_reply' topic.id %}" class="btn btn-primary">回覆討論</a>
   </div>
   {% endif %}
 </div>
-<hr/> <!-- 回復紀錄列表 -->
+<hr/>
 <ul class="list-group">
-  {% for reply in topic.reply_set.all %}
+  {% for reply in reply_list %}
   <li class="list-group-item d-md-flex justify-content-between">
     <div class="ml-2">{{ reply.content|linebreaks }}</div>
     <small class="text-muted">
       <i class="fas fa-user"></i> {{ reply.author }}
       <i class="fas fa-clock"></i> {{ reply.created|date:"Y/m/d H:i" }}
+      {% if perms.topic.delete_reply %}
+      <a href="{% url 'reply_delete' reply.id %}" class="btn btn-sm btn-danger">刪除回覆</a>
+      {% endif %}
     </small>
   </li>
   {% endfor %}

@@ -7,4 +7,5 @@ urlpatterns = [
     path('<int:pk>/', TopicView.as_view(), name='topic_view'),
     path('<int:tid>/reply/', TopicReply.as_view(), name='topic_reply'),
     path('<int:tid>/delete/', TopicDelete.as_view(), name='topic_delete'),
+    path('reply/<int:pk>/delete/', ReplyDelete.as_view(), name='reply_delete'),
 ]

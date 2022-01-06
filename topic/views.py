@@ -28,11 +28,11 @@ class TopicNew(LoginRequiredMixin,CreateView):
 class TopicView(DetailView):
     model = Topic
 
-    #def get_context_data(self, **kwargs):
-    #   # 取得回覆資料傳給頁面範本處理
-    #    ctx = super().get_context_data(**kwargs)
-    #    ctx['reply_list'] = Reply.objects.filter(topic=self.object)
-    #    return ctx
+    def get_context_data(self, **kwargs):
+       # 取得回覆資料傳給頁面範本處理
+        ctx = super().get_context_data(**kwargs)
+        ctx['reply_list'] = Reply.objects.filter(topic=self.object)
+        return ctx
 
     def get_object(self):
         topic = super().get_object()    # 取得欲查看的討論主題
@@ -67,3 +67,11 @@ class TopicDelete(PermissionRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('topic_list')
+class ReplyDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = 'topic.delete_reply'
+    model = Reply
+    template_name = 'confirm_delete.html'
+
+    def get_success_url(self):
+        reply = self.get_object()   # 取得欲刪除的那筆紀錄
+        return reverse('topic_view', args=[reply.topic.id])
