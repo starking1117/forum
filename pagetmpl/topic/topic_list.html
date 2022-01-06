@@ -22,6 +22,7 @@
       <td>{{ topic.replied|date:"Y/m/d H:i" }}</td>
       <td>
         <span class="badge badge-primary">{{ topic.hits }}</span>
+        <span class="badge badge-danger">{{ topic.reply_set.count }}</span>
       </td>
     </tr>
     {% endfor %}
